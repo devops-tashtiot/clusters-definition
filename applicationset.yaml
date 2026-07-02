@@ -1,0 +1,39 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: clusters-apps
+  namespace: argocd
+spec:
+  generators:
+    - git:
+        repoURL: https://github.com/devops-tashtiot/clusters-provision
+        revision: main
+        directories:
+          - path: clusters/*
+  template:
+    metadata:
+      name: '{{path.basename}}'
+      namespace: argocd
+    spec:
+      project: default
+      sources:
+        - repoURL: https://github.com/devops-tashtiot/clusters-provision
+          targetRevision: main
+          path: '{{path}}'
+          helm:
+            valueFiles:
+              - values.yaml
+              - $definition/clusters/{{path.basename}}/values.yaml
+        - repoURL: https://github.com/devops-tashtiot/clusters-definition
+          targetRevision: main
+          ref: definition
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: '{{path.basename}}'
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+          - CreateNamespace=true
+          - ServerSideApply=true

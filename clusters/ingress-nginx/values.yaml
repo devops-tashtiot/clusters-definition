@@ -1,0 +1,2 @@
+# No overrides yet — clusters-provision/clusters/ingress-nginx/values.yaml
+# defaults (ClusterIP, modest resource limits) work as-is for this environment.
