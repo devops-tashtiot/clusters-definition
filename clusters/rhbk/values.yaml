@@ -40,12 +40,10 @@ ldap:
 argocdClient:
   clientId: "argocd"
   redirectUri: "https://argocd.devopstashtiot.page/auth/callback"
-  # Confidential client (publicClient: false in realm-import.yaml) — this is
-  # a real generated secret, NOT this lab's usual shared '123456' convention,
-  # per explicit request. Keep this in sync by hand with the SSM parameter
-  # /devtools/rhbk/argocd-client-secret that
-  # devtools-provision/devtools/argocd/templates/oidc-secret.yaml reads via
-  # ExternalSecret — Keycloak's realm-import has no way to source this from
-  # the same SSM parameter directly (see values.yaml's comment upstream), so
-  # both copies must be rotated together if this secret is ever changed.
-  secret: "bJXIex9aD5W3px21E9j7xMEVCQgzFcL8CO3EeIG0ROw"
+  # Confidential client (publicClient: false in realm-import.yaml). The
+  # realm-import CR intentionally does NOT set a secret — Keycloak assigns
+  # a random one on creation, then templates/set-client-secret-job.yaml
+  # overwrites it via the Admin REST API with the real value from
+  # /devtools/rhbk/argocd-client-secret (ExternalSecret-synced, never
+  # committed to git). See that template's header comment for the full flow.
+  secretSsmParameter: "/devtools/rhbk/argocd-client-secret"
