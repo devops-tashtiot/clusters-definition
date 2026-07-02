@@ -20,22 +20,33 @@ rdsAdmin:
 
 adminPasswordSsmParameter: "/devtools/admin/password"
 
-# TODO: domain-controller's private_ip output isn't known until
-# devtools-labs/terraform/live/devtools/domain-controller applies (currently
-# on hold) — set this once that unit finishes, e.g.:
-#   cd devtools-labs/terraform/live/devtools/domain-controller
-#   terragrunt output -raw private_ip
-# Until then this chart will sync but the wait-for-domain-controller
-# initContainer polls an empty host and never completes, which is the
-# intended "block until AD is actually reachable" behavior, not a bug.
+# Domain controller's LDAP endpoint, addressed via SSM rather than a literal
+# IP/hostname (the private IP changes if the instance is ever replaced).
+# devtools-labs/terraform/modules/domain-controller writes
+# ldap://<current-private-ip>:389 to this SSM parameter on every apply — a
+# private Route53 hosted zone was tried first, but this account's Horizon LZ
+# org-wide SCP has an explicit deny on route53:CreateHostedZone, so SSM
+# indirection is the fallback. If devtools-labs/terraform/live/devtools/domain-controller
+# hasn't applied yet, the wait-for-domain-controller initContainer just polls
+# an unset host and never completes — the intended "block until AD is
+# actually reachable" behavior, not a bug.
 ldap:
-  connectionUrl: "" # ldap://<domain-controller-private-ip>:389
+  connectionUrlSsmParameter: "/devtools/domain-controller/ldap-connection-url"
   # From devtools-labs/terraform/modules/domain-controller: OU=<ou_name>,<base_dn>
   # where ou_name defaults to "devops-tashtiot" and base_dn is derived from
   # domain_name="devtools.local" -> "DC=devtools,DC=local".
   usersDn: "OU=devops-tashtiot,DC=devtools,DC=local"
-  bindDn: "svc-devops-tashtiot@devtools.local"
-  bindCredential: "123456" # matches domain-controller's ldap_bind_password default
+
+# Matches domain-controller's ldap_bind_username_ssm_parameter /
+# ldap_bind_password_ssm_parameter defaults — the domain controller populates
+# these SSM parameters (out-of-band, before it applies) with the svc-devops-tashtiot
+# bind account's sAMAccountName and password; RHBK reads the exact same path,
+# so neither value is ever a literal in git. See
+# clusters-provision/clusters/rhbk/templates/set-ldap-credentials-job.yaml
+# for how they get wired into Keycloak's LDAP federation provider.
+ldapBind:
+  usernameSsmParameter: "/devtools/domain-controller/ldap-bind-username"
+  passwordSsmParameter: "/devtools/domain-controller/ldap-bind-password"
 
 argocdClient:
   clientId: "argocd"
