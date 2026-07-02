@@ -13,7 +13,7 @@ Values are merged: `clusters-provision/clusters/<tool>/values.yaml` is applied f
 
 This means: **don't duplicate base values here — only override what differs per environment.**
 
-The `devtools-labs` `minikube` module registers this repo's `clusters-applicationset` *before* the `devtools-applicationset`, and blocks until `ingress-nginx`, `cloudflared`, and `external-secrets-operator` report Synced+Healthy — see that repo's `CLAUDE.md`.
+The `devtools-labs` `minikube` module registers this repo's `clusters-applicationset` *before* the `devtools-applicationset`, and blocks until `ingress-nginx`, `cloudflared`, `external-secrets-operator`, and `rhbk` report Synced+Healthy — see that repo's `CLAUDE.md`. `rhbk` is in that wait-list (unlike most cluster-infra tools) because the devtools ApplicationSet includes ArgoCD's own OIDC values, which assume `rhbk`'s realm/client already exist.
 
 ## Repository Structure
 
@@ -26,7 +26,7 @@ The `devtools-labs` `minikube` module registers this repo's `clusters-applicatio
         └── values.yaml   # Environment-specific overrides for the tool's Helm chart
 ```
 
-Currently tracked tools: `cloudflared`, `ingress-nginx`, `external-secrets-operator`.
+Currently tracked tools: `cloudflared`, `ingress-nginx`, `external-secrets-operator`, `rhbk`.
 
 ## Adding Overrides for a New Cluster-Infra Tool
 

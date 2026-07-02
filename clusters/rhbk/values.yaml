@@ -1,0 +1,51 @@
+# Environment-specific overrides for RHBK/Keycloak (minikube environment).
+# Merged on top of clusters-provision/clusters/rhbk/values.yaml by ArgoCD.
+
+ingress:
+  host: "rhbk.devopstashtiot.page"
+  className: nginx
+
+# Shared devtools-rds instance (devtools-labs/terraform/live/devtools/rds).
+# TODO: verify against `terragrunt output -raw address` once the rds unit
+# applies — this mirrors the hostname devtools-definition/devtools/confluence
+# already uses for the same instance.
+rds:
+  host: "devtools-rds.cdwso8c8c8zk.il-central-1.rds.amazonaws.com"
+  port: 5432
+  database: rhbk
+
+rdsAdmin:
+  usernameSsmParameter: "/devtools/rds/admin-username"
+  passwordSsmParameter: "/devtools/rds/admin-password"
+
+adminPasswordSsmParameter: "/devtools/admin/password"
+
+# TODO: domain-controller's private_ip output isn't known until
+# devtools-labs/terraform/live/devtools/domain-controller applies (currently
+# on hold) — set this once that unit finishes, e.g.:
+#   cd devtools-labs/terraform/live/devtools/domain-controller
+#   terragrunt output -raw private_ip
+# Until then this chart will sync but the wait-for-domain-controller
+# initContainer polls an empty host and never completes, which is the
+# intended "block until AD is actually reachable" behavior, not a bug.
+ldap:
+  connectionUrl: "" # ldap://<domain-controller-private-ip>:389
+  # From devtools-labs/terraform/modules/domain-controller: OU=<ou_name>,<base_dn>
+  # where ou_name defaults to "devops-tashtiot" and base_dn is derived from
+  # domain_name="devtools.local" -> "DC=devtools,DC=local".
+  usersDn: "OU=devops-tashtiot,DC=devtools,DC=local"
+  bindDn: "svc-devops-tashtiot@devtools.local"
+  bindCredential: "123456" # matches domain-controller's ldap_bind_password default
+
+argocdClient:
+  clientId: "argocd"
+  redirectUri: "https://argocd.devopstashtiot.page/auth/callback"
+  # Confidential client (publicClient: false in realm-import.yaml) — this is
+  # a real generated secret, NOT this lab's usual shared '123456' convention,
+  # per explicit request. Keep this in sync by hand with the SSM parameter
+  # /devtools/rhbk/argocd-client-secret that
+  # devtools-provision/devtools/argocd/templates/oidc-secret.yaml reads via
+  # ExternalSecret — Keycloak's realm-import has no way to source this from
+  # the same SSM parameter directly (see values.yaml's comment upstream), so
+  # both copies must be rotated together if this secret is ever changed.
+  secret: "bJXIex9aD5W3px21E9j7xMEVCQgzFcL8CO3EeIG0ROw"
