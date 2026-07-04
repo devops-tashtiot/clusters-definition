@@ -58,3 +58,12 @@ argocdClient:
   # /devtools/rhbk/argocd-client-secret (ExternalSecret-synced, never
   # committed to git). See that template's header comment for the full flow.
   secretSsmParameter: "/devtools/rhbk/argocd-client-secret"
+
+sonarqubeClient:
+  clientId: "sonarqube"
+  # sonar-auth-oidc's callback path convention: /oauth2/callback/<providerKey>,
+  # where "oidc" is the community-branding-plugin's fixed provider key.
+  redirectUri: "https://sonarqube.devopstashtiot.page/oauth2/callback/oidc"
+  # Same flow as argocdClient.secretSsmParameter above, just for the
+  # "sonarqube" client — see set-sonarqube-client-secret-job.yaml.
+  secretSsmParameter: "/devtools/rhbk/sonarqube-client-secret"
