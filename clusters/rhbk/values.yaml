@@ -53,17 +53,37 @@ argocdClient:
   redirectUri: "https://argocd.devopstashtiot.page/auth/callback"
   # Confidential client (publicClient: false in realm-import.yaml). The
   # realm-import CR intentionally does NOT set a secret — Keycloak assigns
-  # a random one on creation, then templates/set-client-secret-job.yaml
-  # overwrites it via the Admin REST API with the real value from
-  # /devtools/rhbk/argocd-client-secret (ExternalSecret-synced, never
-  # committed to git). See that template's header comment for the full flow.
-  secretSsmParameter: "/devtools/rhbk/argocd-client-secret"
+  # a random one on creation, then templates/set-client-secrets-job.yaml
+  # overwrites it via the Admin REST API with the real value from the shared
+  # sharedClientSecretSsmParameter (see clusters-provision/clusters/rhbk/
+  # values.yaml — set there since it's the same value across every client).
 
 sonarqubeClient:
   clientId: "sonarqube"
   # sonar-auth-oidc's callback path convention: /oauth2/callback/<providerKey>,
   # where "oidc" is the community-branding-plugin's fixed provider key.
   redirectUri: "https://sonarqube.devopstashtiot.page/oauth2/callback/oidc"
-  # Same flow as argocdClient.secretSsmParameter above, just for the
-  # "sonarqube" client — see set-sonarqube-client-secret-job.yaml.
-  secretSsmParameter: "/devtools/rhbk/sonarqube-client-secret"
+
+# Jira/Confluence/Bitbucket clients — no "groups" optionalClientScope on any
+# of these (unlike argocdClient/sonarqubeClient above): each app will use its
+# own LDAP user directory (against the same AD ldap/ldapBind above points at)
+# for authorization/group membership, so Keycloak doesn't need to carry
+# groups as a token claim for them. These clients exist purely for OIDC
+# login. Callback path (/plugins/servlet/oauth/callback) matches the "mO
+# OAuth/OpenID Connect (OIDC) for <Jira|Confluence|Bitbucket> SSO" Atlassian
+# Marketplace app — the same path across all three products. If the
+# first-party "Atlassian SSO for Data Center" app is used instead, its
+# redirect URL is generated per-instance in that app's Authentication
+# methods screen (not a fixed documented path) and this value must be
+# replaced with that generated URL.
+jiraClient:
+  clientId: "jira"
+  redirectUri: "https://jira.devopstashtiot.page/plugins/servlet/oauth/callback"
+
+confluenceClient:
+  clientId: "confluence"
+  redirectUri: "https://confluence.devopstashtiot.page/plugins/servlet/oauth/callback"
+
+bitbucketClient:
+  clientId: "bitbucket"
+  redirectUri: "https://bitbucket.devopstashtiot.page/plugins/servlet/oauth/callback"
