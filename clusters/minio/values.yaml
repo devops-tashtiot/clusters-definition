@@ -3,4 +3,5 @@
 
 # Same shared platform-wide admin password every other devtool/cluster-infra
 # tool uses (rhbk, bitbucket, artifactory, ...) — never a per-tool parameter.
-adminPasswordSsmParameter: "/devtools/admin/password"
+wrapper:
+  adminPasswordSsmParameter: "/devtools/admin/password"
