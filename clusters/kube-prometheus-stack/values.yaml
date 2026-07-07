@@ -16,6 +16,18 @@ kube-prometheus-stack:
       hosts:
         - grafana.devopstashtiot.page
 
+    # Discover dashboard ConfigMaps labeled grafana_dashboard: "1" across every
+    # devtool/cluster-infra namespace, not just this chart's own namespace —
+    # each tool's own umbrella chart renders its dashboard ConfigMap directly
+    # into its own namespace (see e.g.
+    # devtools-provision/devtools/argocd/templates/dashboards.yaml).
+    # rbac.namespaced defaults to false (ClusterRole), so no extra RBAC is
+    # needed for the sidecar to list/watch ConfigMaps in every namespace.
+    sidecar:
+      dashboards:
+        enabled: true
+        searchNamespace: ALL
+
     # Wires GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET from the Secret
     # templates/grafana-oidc-secret.yaml creates (see
     # grafanaOidcClientSecretSsmParameter below) — the client_secret value
