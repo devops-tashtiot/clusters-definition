@@ -1,0 +1,20 @@
+# Environment-specific overrides for kube-prometheus-stack.
+# Merged on top of clusters-provision/clusters/kube-prometheus-stack/values.yaml by ArgoCD.
+
+kube-prometheus-stack:
+  prometheus:
+    prometheusSpec:
+      storageSpec:
+        volumeClaimTemplate:
+          spec:
+            storageClassName: standard
+
+  grafana:
+    persistence:
+      storageClassName: standard
+    ingress:
+      hosts:
+        - grafana.devopstashtiot.page
+
+# Shared admin password across every devtool/cluster-infra tool on this platform.
+grafanaAdminPasswordSsmParameter: "/devtools/admin/password"
