@@ -1,6 +1,6 @@
-# No overrides yet — clusters-provision/clusters/minio/values.yaml defaults
-# work as-is for this environment. rootUser/rootPassword are left unset in
-# provision on purpose (the chart auto-generates and stores them in a
-# Secret) since nothing needs authenticated admin access to this MinIO yet
-# — devops-api only touches the public "platform-clients"/
-# "platform-devops-team" buckets anonymously.
+# Environment-specific overrides for minio.
+# Merged on top of clusters-provision/clusters/minio/values.yaml by ArgoCD.
+
+# Same shared platform-wide admin password every other devtool/cluster-infra
+# tool uses (rhbk, bitbucket, artifactory, ...) — never a per-tool parameter.
+adminPasswordSsmParameter: "/devtools/admin/password"
