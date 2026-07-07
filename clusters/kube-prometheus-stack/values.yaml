@@ -16,5 +16,57 @@ kube-prometheus-stack:
       hosts:
         - grafana.devopstashtiot.page
 
+    # Wires GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET from the Secret
+    # templates/grafana-oidc-secret.yaml creates (see
+    # grafanaOidcClientSecretSsmParameter below) — the client_secret value
+    # itself must never be a literal in git.
+    envValueFrom:
+      GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET:
+        secretKeyRef:
+          name: grafana-oidc-client-secret
+          key: client-secret
+
+    "grafana.ini":
+      server:
+        # Must be the exact https:// URL — TLS terminates at Cloudflare, not
+        # in-cluster (same as every other tool), so without an explicit
+        # root_url Grafana would build an http:// redirect_uri that doesn't
+        # match grafanaClient.redirectUri registered in RHBK (see
+        # clusters-provision/clusters/rhbk/templates/realm-import.yaml),
+        # and Keycloak would reject the login. Same class of fix as
+        # ArgoCD's configs.cm.url.
+        root_url: "https://grafana.devopstashtiot.page"
+      # OIDC login backed by RHBK/AD — see clusters-provision/clusters/rhbk
+      # for the realm + client this issuer/clientID point at.
+      auth.generic_oauth:
+        enabled: true
+        name: RHBK
+        client_id: grafana
+        # client_secret comes from GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET above,
+        # not from here.
+        scopes: "openid profile email groups"
+        auth_url: "https://rhbk.devopstashtiot.page/realms/devtools/protocol/openid-connect/auth"
+        token_url: "https://rhbk.devopstashtiot.page/realms/devtools/protocol/openid-connect/token"
+        api_url: "https://rhbk.devopstashtiot.page/realms/devtools/protocol/openid-connect/userinfo"
+        allow_sign_up: true
+        # Grants Admin to anyone in the devops-tashtiot AD group (surfaced as
+        # a "groups" claim by RHBK's optional "groups" client scope — see
+        # clusters-provision/clusters/rhbk/templates/realm-import.yaml and
+        # set-ldap-credentials-job.yaml's group-ldap-mapper), same convention
+        # as ArgoCD's policy.csv `g, devops-tashtiot, role:admin` — plus the
+        # svc-devops-tashtiot user specifically, by username. Everyone else
+        # who can log in via RHBK gets Viewer.
+        role_attribute_path: "(contains(groups[*], 'devops-tashtiot') || preferred_username=='svc-devops-tashtiot') && 'Admin' || 'Viewer'"
+        role_attribute_strict: false
+
 # Shared admin password across every devtool/cluster-infra tool on this platform.
 grafanaAdminPasswordSsmParameter: "/devtools/admin/password"
+
+# RHBK-issued OIDC client secret for Grafana — see
+# clusters-provision/clusters/kube-prometheus-stack/templates/grafana-oidc-secret.yaml.
+# Same shared SSM parameter every other RHBK-backed devtool reads (see
+# clusters-provision/clusters/rhbk/values.yaml's sharedClientSecretSsmParameter)
+# — clusters-provision/clusters/rhbk's set-client-secrets-job.yaml sets the
+# actual secret on every client (including grafana) via the Admin API, one
+# source of truth, no manual sync needed.
+grafanaOidcClientSecretSsmParameter: "/devtools/rhbk/oidc-client-secret"

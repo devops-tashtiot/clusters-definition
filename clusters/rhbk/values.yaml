@@ -64,6 +64,11 @@ sonarqubeClient:
   # where "oidc" is the community-branding-plugin's fixed provider key.
   redirectUri: "https://sonarqube.devopstashtiot.page/oauth2/callback/oidc"
 
+grafanaClient:
+  clientId: "grafana"
+  # Grafana's generic_oauth callback path is fixed: /login/generic_oauth.
+  redirectUri: "https://grafana.devopstashtiot.page/login/generic_oauth"
+
 # Jira/Confluence/Bitbucket clients — no "groups" optionalClientScope on any
 # of these (unlike argocdClient/sonarqubeClient above): each app will use its
 # own LDAP user directory (against the same AD ldap/ldapBind above points at)
