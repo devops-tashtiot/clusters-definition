@@ -74,13 +74,16 @@ grafanaClient:
 # own LDAP user directory (against the same AD ldap/ldapBind above points at)
 # for authorization/group membership, so Keycloak doesn't need to carry
 # groups as a token claim for them. These clients exist purely for OIDC
-# login. Callback path (/plugins/servlet/oauth/callback) matches the "mO
-# OAuth/OpenID Connect (OIDC) for <Jira|Confluence|Bitbucket> SSO" Atlassian
-# Marketplace app — the same path across all three products. If the
-# first-party "Atlassian SSO for Data Center" app is used instead, its
-# redirect URL is generated per-instance in that app's Authentication
-# methods screen (not a fixed documented path) and this value must be
-# replaced with that generated URL.
+# login. Originally assumed a shared /plugins/servlet/oauth/callback path
+# (the "mO OAuth/OpenID Connect (OIDC) for <Jira|Confluence|Bitbucket> SSO"
+# Atlassian Marketplace app's fixed path) across all three products — wrong
+# for Bitbucket 10.2.2 (see devtools-definition/devtools/bitbucket/values.yaml),
+# confirmed live: its built-in "Single sign-on" admin screen (the first-party
+# SSO feature shipped in recent Bitbucket DC, not the marketplace app) shows
+# /plugins/servlet/oidc/callback instead, and RHBK rejected the login with
+# "Invalid parameter: redirect_uri" until this was corrected. If Jira/
+# Confluence hit the same error, check their SSO screens too — recent DC
+# versions may have moved to the same first-party feature/path.
 jiraClient:
   clientId: "jira"
   redirectUri: "https://jira.devopstashtiot.page/plugins/servlet/oauth/callback"
@@ -91,4 +94,4 @@ confluenceClient:
 
 bitbucketClient:
   clientId: "bitbucket"
-  redirectUri: "https://bitbucket.devopstashtiot.page/plugins/servlet/oauth/callback"
+  redirectUri: "https://bitbucket.devopstashtiot.page/plugins/servlet/oidc/callback"
