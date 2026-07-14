@@ -77,21 +77,25 @@ grafanaClient:
 # login. Originally assumed a shared /plugins/servlet/oauth/callback path
 # (the "mO OAuth/OpenID Connect (OIDC) for <Jira|Confluence|Bitbucket> SSO"
 # Atlassian Marketplace app's fixed path) across all three products — wrong
-# for Bitbucket 10.2.2 (see devtools-definition/devtools/bitbucket/values.yaml),
-# confirmed live: its built-in "Single sign-on" admin screen (the first-party
-# SSO feature shipped in recent Bitbucket DC, not the marketplace app) shows
-# /plugins/servlet/oidc/callback instead, and RHBK rejected the login with
-# "Invalid parameter: redirect_uri" until this was corrected. If Jira/
-# Confluence hit the same error, check their SSO screens too — recent DC
-# versions may have moved to the same first-party feature/path.
+# for all three: each one's built-in "Single sign-on" admin screen (the
+# first-party SSO feature shipped in recent DC versions, not the marketplace
+# app) shows /plugins/servlet/oidc/callback instead, and RHBK rejected the
+# login with "Invalid parameter: redirect_uri" until corrected — first
+# caught on Bitbucket 10.2.2 (see devtools-definition/devtools/bitbucket/values.yaml),
+# then confirmed the same on Jira (live SSO screen showed oidc/callback) and
+# assumed identical on Confluence (same plugin family/version pattern).
 jiraClient:
   clientId: "jira"
-  redirectUri: "https://jira.devopstashtiot.page/plugins/servlet/oauth/callback"
+  redirectUri: "https://jira.devopstashtiot.page/plugins/servlet/oidc/callback"
 
 confluenceClient:
   clientId: "confluence"
-  redirectUri: "https://confluence.devopstashtiot.page/plugins/servlet/oauth/callback"
+  redirectUri: "https://confluence.devopstashtiot.page/plugins/servlet/oidc/callback"
 
 bitbucketClient:
   clientId: "bitbucket"
   redirectUri: "https://bitbucket.devopstashtiot.page/plugins/servlet/oidc/callback"
+
+artifactoryClient:
+  clientId: "artifactory"
+  redirectUri: "https://artifactory.devopstashtiot.page/artifactory/webapp/oauth/callback"
