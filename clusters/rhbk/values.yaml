@@ -98,4 +98,10 @@ bitbucketClient:
 
 artifactoryClient:
   clientId: "artifactory"
-  redirectUri: "https://artifactory.devopstashtiot.page/artifactory/webapp/oauth/callback"
+  # Corrected 2026-07-15 from a live "Invalid parameter: redirect_uri" failure — the guessed
+  # /artifactory/webapp/oauth/callback path (a UI-plugin-era convention, matching
+  # jira/confluence/bitbucket's /plugins/servlet/oidc/callback pattern) was wrong for
+  # Artifactory. The real callback Artifactory's OIDC integration uses is
+  # /artifactory/api/oauth2/loginResponse, captured verbatim from the redirect_uri query
+  # param on Keycloak's /protocol/openid-connect/auth request during a real failed login.
+  redirectUri: "https://artifactory.devopstashtiot.page/artifactory/api/oauth2/loginResponse"
