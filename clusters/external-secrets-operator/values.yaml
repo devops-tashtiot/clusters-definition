@@ -4,3 +4,14 @@
 wrapper:
   awsParameterStore:
     region: "il-central-1"
+
+# EKS-only: pins the ServiceAccount name explicitly (rather than the
+# chart's auto-generated fullname) so devtools-labs' eks module's Pod
+# Identity association (namespace=external-secrets-operator,
+# service_account=eso_service_account_name, default "external-secrets") has
+# an exact name to match against — no IAM annotation needed (Pod Identity,
+# not IRSA). On minikube this override is inert: ESO's SSM reads there still
+# fall through to the node's own IMDS role regardless of ServiceAccount name.
+external-secrets:
+  serviceAccount:
+    name: "external-secrets"

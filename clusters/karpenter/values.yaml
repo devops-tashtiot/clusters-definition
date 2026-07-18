@@ -1,0 +1,19 @@
+# EKS-only environment. The three values below are literal, account-specific
+# outputs of devtools-labs/terraform/modules/eks (module.karpenter +
+# module.eks) — same convention as other AWS-specific committed values across
+# this platform (e.g. devtools-definition/devtools/artifactory/values.yaml's
+# S3 bucket name/region). Fill these in from `terragrunt output` after the
+# eks Terragrunt unit has been applied — they don't exist before then:
+#
+#   cd devtools-labs/terraform/live/devtools/eks
+#   terragrunt output karpenter_node_iam_role_name
+#   terragrunt output cluster_name
+#   terragrunt output karpenter_interruption_queue_name
+
+karpenter:
+  settings:
+    clusterName: "devtools-eks"
+    interruptionQueue: ""   # set from `terragrunt output karpenter_interruption_queue_name`
+
+wrapper:
+  nodeIamRoleName: ""   # set from `terragrunt output karpenter_node_iam_role_name`
