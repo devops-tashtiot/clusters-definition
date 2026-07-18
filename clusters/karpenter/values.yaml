@@ -10,5 +10,16 @@ karpenter:
     clusterName: "devtools-eks"
     interruptionQueue: "devtools-eks-karpenter-interruption"
 
+  # Without this, the controller panics on startup: "unable to determine
+  # region from IMDS: ... context deadline exceeded". eksControlPlane: true
+  # (clusters-provision base values) lets it discover most cluster details
+  # via the EKS DescribeCluster API, but it still needs the region itself
+  # up front to know which AWS endpoint to call DescribeCluster against in
+  # the first place — IMDS auto-detection failed here, so set it explicitly.
+  controller:
+    env:
+      - name: AWS_REGION
+        value: "il-central-1"
+
 wrapper:
   nodeIamRoleName: "devtools-eks-karpenter-node"
