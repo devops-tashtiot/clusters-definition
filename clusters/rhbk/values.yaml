@@ -105,3 +105,9 @@ artifactoryClient:
   # /artifactory/api/oauth2/loginResponse, captured verbatim from the redirect_uri query
   # param on Keycloak's /protocol/openid-connect/auth request during a real failed login.
   redirectUri: "https://artifactory.devopstashtiot.page/artifactory/api/oauth2/loginResponse"
+
+harborClient:
+  clientId: "harbor"
+  # Harbor's documented fixed OIDC callback path (<harbor_url>/c/oidc/callback) — not yet
+  # live-verified against an actual login flow, same caveat as artifactoryClient above.
+  redirectUri: "https://harbor.devopstashtiot.page/c/oidc/callback"
