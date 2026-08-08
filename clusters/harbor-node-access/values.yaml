@@ -1,0 +1,12 @@
+# Environment-specific overrides for harbor-node-access.
+# Merged on top of clusters-provision/clusters/harbor-node-access/values.yaml.
+#
+# Registry hostnames the node should be able to pull from (all Cloudflare-fronted
+# via ingress-nginx). Add one here to extend — no cert change (they all share the
+# Cloudflare Origin CA) and no new IP (all map to the ingress ClusterIP).
+registryHosts:
+  - harbor.devopstashtiot.page
+  - artifactory.devopstashtiot.page
+
+# SSM parameter holding the Cloudflare Origin CA root (pulled via ExternalSecret).
+caSsmParameter: /devtools/cloudflare/origin-ca-root-cert
