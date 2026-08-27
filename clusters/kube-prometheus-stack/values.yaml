@@ -7,11 +7,11 @@ kube-prometheus-stack:
       storageSpec:
         volumeClaimTemplate:
           spec:
-            storageClassName: standard
+            storageClassName: gp3
 
   grafana:
     persistence:
-      storageClassName: standard
+      storageClassName: gp3
     ingress:
       hosts:
         - grafana.devopstashtiot.page
