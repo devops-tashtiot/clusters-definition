@@ -12,6 +12,12 @@ wrapper:
 # once this annotation is present — no explicit auth: block needed on the
 # ClusterSecretStore, it's picked up by the AWS SDK's default credential
 # chain. Role created in devtools-labs/terraform/modules/eks/iam.tf.
-serviceAccount:
-  annotations:
-    eks.amazonaws.com/role-arn: "arn:aws:iam::342831714456:role/devtools-eks-external-secrets-ccc5ba7fe5d15756f8d5dc94eb"
+#
+# external-secrets-operator is an umbrella chart wrapping the upstream
+# "external-secrets" chart as a subchart (see its Chart.yaml) — values must
+# be nested under that subchart's name, a bare top-level serviceAccount: key
+# is silently ignored by Helm.
+external-secrets:
+  serviceAccount:
+    annotations:
+      eks.amazonaws.com/role-arn: "arn:aws:iam::342831714456:role/devtools-eks-external-secrets-ccc5ba7fe5d15756f8d5dc94eb"
