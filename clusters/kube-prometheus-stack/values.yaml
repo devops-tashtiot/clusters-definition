@@ -72,7 +72,7 @@ kube-prometheus-stack:
         role_attribute_strict: false
 
 # Shared admin password across every devtool/cluster-infra tool on this platform.
-grafanaAdminPasswordSsmParameter: "/devtools/admin/password"
+grafanaAdminPasswordSsmParameter: "/devops/terraform-created/admin/password"
 
 # RHBK-issued OIDC client secret for Grafana — see
 # clusters-provision/clusters/kube-prometheus-stack/templates/grafana-oidc-secret.yaml.
@@ -81,4 +81,4 @@ grafanaAdminPasswordSsmParameter: "/devtools/admin/password"
 # — clusters-provision/clusters/rhbk's set-client-secrets-job.yaml sets the
 # actual secret on every client (including grafana) via the Admin API, one
 # source of truth, no manual sync needed.
-grafanaOidcClientSecretSsmParameter: "/devtools/rhbk/oidc-client-secret"
+grafanaOidcClientSecretSsmParameter: "/devops/terraform-created/rhbk/oidc-client-secret"

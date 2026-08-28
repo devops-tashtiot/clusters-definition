@@ -6,4 +6,4 @@
 # see devtools-labs/CLAUDE.md "Prerequisites".
 
 tunnelId: "7de872ce-2826-42fb-9aea-325e10e3e5fc"
-tunnelCredentialsSsmParameter: "/devtools/cloudflare/tunnel-credentials"
+tunnelCredentialsSsmParameter: "/devops/prerequisite/cloudflare/tunnel-credentials"

@@ -4,16 +4,9 @@ This repo holds environment-specific Helm values overrides for shared cluster in
 
 ## Role in the Architecture
 
-ArgoCD's ApplicationSet (defined in this repo's `applicationset.yaml`, bootstrapped by `application.yaml`) deploys each cluster-infra tool using **two sources**:
+ArgoCD's ApplicationSet (defined in this repo's `applicationset.yaml`, bootstrapped by `application.yaml`) deploys each cluster-infra tool from **two merged sources**: `clusters-provision/clusters/<tool>/values.yaml` (base chart + defaults) applied first, then `clusters-definition/clusters/<tool>/values.yaml` (this repo) overriding on top. **Don't duplicate base values here — only override what differs per environment.**
 
-1. The Helm chart from `clusters-provision` (base chart + default `values.yaml`)
-2. A reference named `$definition` pointing to this repo
-
-Values are merged: `clusters-provision/clusters/<tool>/values.yaml` is applied first, then `clusters-definition/clusters/<tool>/values.yaml` overrides on top.
-
-This means: **don't duplicate base values here — only override what differs per environment.**
-
-The `devtools-labs` `minikube` module registers this repo's `clusters-applicationset` *before* the `devtools-applicationset`, and blocks until `ingress-nginx`, `cloudflared`, `external-secrets-operator`, and `rhbk` report Synced+Healthy — see that repo's `CLAUDE.md`. `rhbk` is in that wait-list (unlike most cluster-infra tools) because the devtools ApplicationSet includes ArgoCD's own OIDC values, which assume `rhbk`'s realm/client already exist.
+`devtools-labs`' `minikube` module registers this repo's `clusters-applicationset` *before* `devtools-applicationset`, and blocks until `ingress-nginx`, `cloudflared`, `external-secrets-operator`, and `rhbk` report Synced+Healthy. `rhbk` is in that wait-list — unlike most cluster-infra tools — because the devtools ApplicationSet includes ArgoCD's own OIDC values, which assume `rhbk`'s realm/client already exist.
 
 ## Repository Structure
 

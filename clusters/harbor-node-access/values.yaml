@@ -9,4 +9,4 @@ registryHosts:
   - artifactory.devopstashtiot.page
 
 # SSM parameter holding the Cloudflare Origin CA root (pulled via ExternalSecret).
-caSsmParameter: /devtools/cloudflare/origin-ca-root-cert
+caSsmParameter: /devops/terraform-created/cloudflare/origin-ca-root-cert

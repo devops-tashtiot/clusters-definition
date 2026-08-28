@@ -15,10 +15,10 @@ rds:
   database: rhbk
 
 rdsAdmin:
-  usernameSsmParameter: "/devtools/rds/admin-username"
-  passwordSsmParameter: "/devtools/rds/admin-password"
+  usernameSsmParameter: "/devops/terraform-created/rds/admin-username"
+  passwordSsmParameter: "/devops/terraform-created/rds/admin-password"
 
-adminPasswordSsmParameter: "/devtools/admin/password"
+adminPasswordSsmParameter: "/devops/terraform-created/admin/password"
 
 # Domain controller's LDAP endpoint, addressed via SSM rather than a literal
 # IP/hostname (the private IP changes if the instance is ever replaced).
@@ -31,7 +31,7 @@ adminPasswordSsmParameter: "/devtools/admin/password"
 # an unset host and never completes — the intended "block until AD is
 # actually reachable" behavior, not a bug.
 ldap:
-  connectionUrlSsmParameter: "/devtools/domain-controller/ldap-connection-url"
+  connectionUrlSsmParameter: "/devops/terraform-created/domain-controller/ldap-connection-url"
   # From devtools-labs/terraform/modules/domain-controller: OU=<ou_name>,<base_dn>
   # where ou_name defaults to "devops-tashtiot" and base_dn is derived from
   # domain_name="devtools.local" -> "DC=devtools,DC=local".
@@ -45,8 +45,8 @@ ldap:
 # clusters-provision/clusters/rhbk/templates/set-ldap-credentials-job.yaml
 # for how they get wired into Keycloak's LDAP federation provider.
 ldapBind:
-  usernameSsmParameter: "/devtools/domain-controller/ldap-bind-username"
-  passwordSsmParameter: "/devtools/domain-controller/ldap-bind-password"
+  usernameSsmParameter: "/devops/terraform-created/domain-controller/ldap-bind-username"
+  passwordSsmParameter: "/devops/terraform-created/domain-controller/ldap-bind-password"
 
 argocdClient:
   clientId: "argocd"

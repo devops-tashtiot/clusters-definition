@@ -4,4 +4,4 @@
 # Same shared platform-wide admin password every other devtool/cluster-infra
 # tool uses (rhbk, bitbucket, artifactory, ...) — never a per-tool parameter.
 wrapper:
-  adminPasswordSsmParameter: "/devtools/admin/password"
+  adminPasswordSsmParameter: "/devops/terraform-created/admin/password"

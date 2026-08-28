@@ -6,8 +6,8 @@ wrapper:
   # SSL/TLS > Origin Server > Create Certificate, then aws ssm put-parameter),
   # same convention as every other secret in this project.
   originCert:
-    crtSsmParameter: "/devtools/cloudflare/origin-cert-crt"
-    keySsmParameter: "/devtools/cloudflare/origin-cert-key"
+    crtSsmParameter: "/devops/terraform-created/cloudflare/origin-cert-crt"
+    keySsmParameter: "/devops/terraform-created/cloudflare/origin-cert-key"
 
 # Tells the controller which Secret to present by default on its 443
 # listener for hosts without their own per-Ingress TLS block (i.e. every
