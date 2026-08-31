@@ -32,10 +32,17 @@ adminPasswordSsmParameter: "/devops/terraform-created/admin/password"
 # actually reachable" behavior, not a bug.
 ldap:
   connectionUrlSsmParameter: "/devops/terraform-created/domain-controller/ldap-connection-url"
-  # From devtools-labs/terraform/modules/domain-controller: OU=<ou_name>,<base_dn>
-  # where ou_name defaults to "devops-tashtiot" and base_dn is derived from
-  # domain_name="devtools.local" -> "DC=devtools,DC=local".
-  usersDn: "OU=devops-tashtiot,DC=devtools,DC=local"
+  # Domain root, not the OU-scoped DN (OU=devops-tashtiot,...) this used to
+  # be — an OU-scoped Base DN makes any AD user created outside that OU
+  # permanently invisible to every LDAP consumer on this platform (subtree
+  # search only reaches down from the Base DN, never sideways). Matches
+  # devtools-labs/terraform/modules/domain-controller's published
+  # /devops/terraform-created/domain-controller/base-dn SSM parameter — not
+  # sourced from SSM here since this value is a plain Helm value, not a
+  # secret, but keep both in sync if domain_name ever changes. Accepted
+  # tradeoff, deliberately not filtered: AD's own built-in accounts
+  # (Administrator, Guest, krbtgt) also become visible/syncable.
+  usersDn: "DC=devtools,DC=local"
 
 # Username matches domain-controller's ldap_bind_username_ssm_parameter
 # default. Password points directly at the shared prerequisite secret
