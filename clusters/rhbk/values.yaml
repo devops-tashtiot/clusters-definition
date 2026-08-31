@@ -37,16 +37,17 @@ ldap:
   # domain_name="devtools.local" -> "DC=devtools,DC=local".
   usersDn: "OU=devops-tashtiot,DC=devtools,DC=local"
 
-# Matches domain-controller's ldap_bind_username_ssm_parameter /
-# ldap_bind_password_ssm_parameter defaults — the domain controller populates
-# these SSM parameters (out-of-band, before it applies) with the svc-devops-tashtiot
-# bind account's sAMAccountName and password; RHBK reads the exact same path,
-# so neither value is ever a literal in git. See
-# clusters-provision/clusters/rhbk/templates/set-ldap-credentials-job.yaml
+# Username matches domain-controller's ldap_bind_username_ssm_parameter
+# default. Password points directly at the shared prerequisite secret
+# (/devops/prerequisite/generic-password) rather than any
+# domain-controller-republished copy — every consumer of "the shared
+# password" (rds, devtools-secrets, domain-controller's own AD accounts, and
+# now RHBK's LDAP bind) reads the same one value, no redundant republishing.
+# See clusters-provision/clusters/rhbk/templates/set-ldap-credentials-job.yaml
 # for how they get wired into Keycloak's LDAP federation provider.
 ldapBind:
   usernameSsmParameter: "/devops/terraform-created/domain-controller/ldap-bind-username"
-  passwordSsmParameter: "/devops/terraform-created/domain-controller/ldap-bind-password"
+  passwordSsmParameter: "/devops/prerequisite/generic-password"
 
 argocdClient:
   clientId: "argocd"
