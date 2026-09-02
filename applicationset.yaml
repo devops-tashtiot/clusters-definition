@@ -7,7 +7,7 @@ spec:
   generators:
     - git:
         repoURL: https://github.com/devops-tashtiot/clusters-provision
-        revision: main
+        revision: master
         directories:
           - path: clusters/*
   template:
@@ -18,14 +18,14 @@ spec:
       project: default
       sources:
         - repoURL: https://github.com/devops-tashtiot/clusters-provision
-          targetRevision: main
+          targetRevision: master
           path: '{{path}}'
           helm:
             valueFiles:
               - values.yaml
               - $definition/clusters/{{path.basename}}/values.yaml
         - repoURL: https://github.com/devops-tashtiot/clusters-definition
-          targetRevision: main
+          targetRevision: master
           ref: definition
       destination:
         server: https://kubernetes.default.svc
